@@ -6,7 +6,7 @@ data class ProductModel(
     @SerializedName("id") val id: Int,
     @SerializedName("title") val title: String,
     @SerializedName("description") val description: String,
-    @SerializedName("price") val price: Int,
+    @SerializedName("price") val price: Double,
     @SerializedName("discountPercentage") val discountPercentage: Double,
     @SerializedName("rating") val rating: Double,
     @SerializedName("stock") val stock: Int,
