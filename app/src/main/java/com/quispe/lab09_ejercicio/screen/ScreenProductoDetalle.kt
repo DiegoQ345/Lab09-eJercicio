@@ -19,7 +19,6 @@ import coil.compose.AsyncImage
 import com.quispe.lab09_ejercicio.Models.ProductModel
 import com.quispe.lab09_ejercicio.Interfaz.ProductApiService
 
-
 @Composable
 fun ScreenProductoDetalle(navController: NavHostController, servicio: ProductApiService, id: Int) {
     var producto by remember { mutableStateOf<ProductModel?>(null) }
@@ -43,14 +42,26 @@ fun ScreenProductoDetalle(navController: NavHostController, servicio: ProductApi
                 .verticalScroll(rememberScrollState())
                 .padding(16.dp)
         ) {
-            Text(producto!!.title, style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
-            Text("Marca: ${producto!!.brand}", style = MaterialTheme.typography.bodyMedium, color = Color.Gray)
-            Text("Precio: $${producto!!.price}", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary)
+            Text(
+                producto!!.title ?: "Sin título",
+                style = MaterialTheme.typography.headlineMedium,
+                fontWeight = FontWeight.Bold
+            )
+            Text(
+                "Marca: ${producto!!.brand ?: "Sin marca"}",
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color.Gray
+            )
+            Text(
+                "Precio: $${producto!!.price ?: 0.0}",
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.primary
+            )
             Spacer(modifier = Modifier.height(8.dp))
 
             AsyncImage(
-                model = producto!!.thumbnail,
-                contentDescription = producto!!.title,
+                model = producto!!.thumbnail ?: "",
+                contentDescription = producto!!.title ?: "",
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(200.dp),
@@ -59,20 +70,20 @@ fun ScreenProductoDetalle(navController: NavHostController, servicio: ProductApi
 
             Spacer(modifier = Modifier.height(12.dp))
             Text("Descripción:", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
-            Text(producto!!.description, style = MaterialTheme.typography.bodyMedium)
+            Text(producto!!.description ?: "Sin descripción", style = MaterialTheme.typography.bodyMedium)
             Spacer(modifier = Modifier.height(8.dp))
 
-            Text("Calificación: ${producto!!.rating}", style = MaterialTheme.typography.bodyMedium)
-            Text("Stock disponible: ${producto!!.stock}", style = MaterialTheme.typography.bodyMedium)
+            Text("Calificación: ${producto!!.rating ?: 0.0}", style = MaterialTheme.typography.bodyMedium)
+            Text("Stock disponible: ${producto!!.stock ?: 0}", style = MaterialTheme.typography.bodyMedium)
 
             Spacer(modifier = Modifier.height(16.dp))
 
             Text("Imágenes:", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
             LazyRow {
-                items(producto!!.images) { url ->
+                items(producto!!.images ?: emptyList()) { url ->
                     AsyncImage(
                         model = url,
-                        contentDescription = producto!!.title,
+                        contentDescription = producto!!.title ?: "",
                         modifier = Modifier
                             .size(120.dp)
                             .padding(end = 8.dp),
@@ -83,3 +94,4 @@ fun ScreenProductoDetalle(navController: NavHostController, servicio: ProductApi
         }
     }
 }
+
