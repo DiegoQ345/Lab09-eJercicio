@@ -1,7 +1,6 @@
 package com.quispe.lab09_ejercicio.screen
 
 import android.util.Log
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -21,8 +20,6 @@ import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.quispe.lab09_ejercicio.Models.ProductModel
 import com.quispe.lab09_ejercicio.Interfaz.ProductApiService
-
-
 
 @Composable
 fun ScreenProductos(navController: NavHostController, servicio: ProductApiService) {
@@ -53,37 +50,56 @@ fun ScreenProductos(navController: NavHostController, servicio: ProductApiServic
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable { navController.navigate("productoDetalle/${producto.id}") }
+                    .clickable { navController.navigate("productoDetalle/${producto.id ?: 0}") }
                     .padding(8.dp)
             ) {
                 AsyncImage(
-                    model = producto.thumbnail,
-                    contentDescription = producto.title,
+                    model = producto.thumbnail ?: "",
+                    contentDescription = producto.title ?: "",
                     modifier = Modifier.size(80.dp),
                     contentScale = ContentScale.Crop
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Column(modifier = Modifier.weight(1f)) {
-                    Text(producto.title, style = MaterialTheme.typography.titleMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                    Text(producto.brand, style = MaterialTheme.typography.bodySmall, color = Color.Gray)
-                    Text("Precio: $${producto.price}", style = MaterialTheme.typography.bodyMedium)
+                    Text(
+                        producto.title ?: "Sin título",
+                        style = MaterialTheme.typography.titleMedium,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                    Text(
+                        producto.brand ?: "Sin marca",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = Color.Gray
+                    )
+                    Text(
+                        "Precio: $${producto.price ?: 0.0}",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
                 }
-                Icon(Icons.Outlined.ArrowForward, contentDescription = "Ver detalle", modifier = Modifier.align(Alignment.CenterVertically))
+                Icon(
+                    Icons.Outlined.ArrowForward,
+                    contentDescription = "Ver detalle",
+                    modifier = Modifier.align(Alignment.CenterVertically)
+                )
             }
             Divider()
         }
 
-        // Loader mientras se cargan más
         if (isLoading) {
             item {
-                Box(modifier = Modifier.fillMaxWidth().padding(16.dp), contentAlignment = Alignment.Center) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    contentAlignment = Alignment.Center
+                ) {
                     CircularProgressIndicator()
                 }
             }
         }
     }
 
-    // Detectar si se llegó al final del scroll
     LaunchedEffect(listState) {
         snapshotFlow { listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index }
             .collect { index ->
@@ -93,4 +109,3 @@ fun ScreenProductos(navController: NavHostController, servicio: ProductApiServic
             }
     }
 }
-
