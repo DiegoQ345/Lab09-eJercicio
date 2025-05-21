@@ -11,37 +11,44 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.rememberNavController
+import com.quispe.lab09_ejercicio.Interfaz.ProductApiService
 import com.quispe.lab09_ejercicio.ui.theme.Lab09EjercicioTheme
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            Lab09EjercicioTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
-            }
+
         }
     }
 }
 
+
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
+fun ProgPrincipal9() {
+    val urlBase = "https://dummyjson.com/"
+    val retrofit = Retrofit.Builder()
+        .baseUrl(urlBase)
+        .addConverterFactory(GsonConverterFactory.create())
+        .build()
+
+    val servicio = retrofit.create(ProductApiService::class.java)
+    val navController = rememberNavController()
+
+    Scaffold(
+        topBar = { BarraSuperior() },
+        bottomBar = { BarraInferior(navController) },
+        content = { paddingValues ->
+            Contenido(paddingValues, navController, servicio)
+        }
     )
 }
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    Lab09EjercicioTheme {
-        Greeting("Android")
-    }
-}
+
+
+
+
