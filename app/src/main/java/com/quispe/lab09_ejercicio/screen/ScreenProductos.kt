@@ -7,6 +7,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.outlined.ArrowForward
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -44,6 +45,7 @@ fun ScreenProductos(navController: NavHostController, servicio: ProductApiServic
             isLoading = false
         }
     }
+    Box(modifier = Modifier.fillMaxSize()) {
 
     LazyColumn(state = listState) {
         items(productos) { producto ->
@@ -86,6 +88,8 @@ fun ScreenProductos(navController: NavHostController, servicio: ProductApiServic
             Divider()
         }
 
+
+
         if (isLoading) {
             item {
                 Box(
@@ -97,6 +101,15 @@ fun ScreenProductos(navController: NavHostController, servicio: ProductApiServic
                     CircularProgressIndicator()
                 }
             }
+        }
+    }
+        FloatingActionButton(
+            onClick = { navController.navigate("nuevoProducto") },
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(16.dp)
+        ) {
+            Icon(Icons.Default.Add, contentDescription = "Nuevo Producto")
         }
     }
 
