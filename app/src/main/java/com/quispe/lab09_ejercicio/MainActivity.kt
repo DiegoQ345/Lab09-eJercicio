@@ -22,8 +22,13 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -41,7 +46,9 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import com.quispe.lab09_ejercicio.Models.ProductModel
 import com.quispe.lab09_ejercicio.screen.ScreenProductoDetalle
+import com.quispe.lab09_ejercicio.screen.ScreenProductoForm
 import com.quispe.lab09_ejercicio.screen.ScreenProductos
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -120,12 +127,43 @@ fun Contenido(
             .fillMaxSize()
             .padding(pv)
     ) {
+        val scope = rememberCoroutineScope()
+
         NavHost(
             navController = navController,
             startDestination = "inicio"
         ) {
-            composable("inicio") { ScreenInicio() }
-            composable("productos") { ScreenProductos(navController, servicio) }
+            composable("inicio") {
+                ScreenInicio()
+            }
+
+            composable("productos") {
+                ScreenProductos(navController, servicio)
+            }
+
+            composable("nuevoProducto") {
+                ScreenProductoForm(navController, servicio)
+            }
+
+            composable(
+                "editarProducto/{id}",
+                arguments = listOf(navArgument("id") { type = NavType.IntType })
+            ) {
+                val id = it.arguments?.getInt("id") ?: 0
+                var producto by remember { mutableStateOf<ProductModel?>(null) }
+
+                // Llamada a la API usando CoroutineScope en lugar de LaunchedEffect
+                LaunchedEffect(Unit) {
+                    scope.launch {
+                        producto = servicio.getProductById(id)
+                    }
+                }
+
+                producto?.let { productoCargado ->
+                    ScreenProductoForm(navController, servicio, productoCargado)
+                }
+            }
+
             composable(
                 "productoDetalle/{id}",
                 arguments = listOf(navArgument("id") { type = NavType.IntType })
@@ -136,6 +174,8 @@ fun Contenido(
         }
     }
 }
+
+
 
 @Composable
 fun ScreenInicio() {
