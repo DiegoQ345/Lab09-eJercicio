@@ -18,6 +18,7 @@ import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.quispe.lab09_ejercicio.Models.ProductModel
 import com.quispe.lab09_ejercicio.Interfaz.ProductApiService
+import kotlinx.coroutines.launch
 
 @Composable
 fun ScreenProductoDetalle(navController: NavHostController, servicio: ProductApiService, id: Int) {
@@ -79,6 +80,9 @@ fun ScreenProductoDetalle(navController: NavHostController, servicio: ProductApi
             Spacer(modifier = Modifier.height(16.dp))
 
             Text("Imágenes:", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+
+
+
             LazyRow {
                 items(producto!!.images ?: emptyList()) { url ->
                     AsyncImage(
@@ -91,6 +95,25 @@ fun ScreenProductoDetalle(navController: NavHostController, servicio: ProductApi
                     )
                 }
             }
+
+            val scope = rememberCoroutineScope()
+
+            Button(
+                onClick = {
+                    scope.launch {
+                        try {
+                            servicio.deleteProduct(producto!!.id!!)
+                            navController.popBackStack()
+                        } catch (e: Exception) {
+                            Log.e("EliminarProducto", "Error: ${e.message}")
+                        }
+                    }
+                },
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
+            ) {
+                Text("Eliminar")
+            }
+
         }
     }
 }
